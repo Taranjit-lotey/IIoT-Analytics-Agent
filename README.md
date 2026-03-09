@@ -99,6 +99,5 @@ Type `kql` to see the generated query for any result.
 | Query language | KQL (Kusto Query Language) |
 | Query interpretation | Azure AI Foundry — GPT-4o |
 | Data governance | OpenMetadata |
-| Data governance | OpenMetadata |
 | Ingestion | Python, azure-kusto-ingest |
 | Interface | Terminal (Python) |
