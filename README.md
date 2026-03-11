@@ -1,31 +1,10 @@
-# IIoT-Analytics-Agent
-
 # IIoT Analytics Platform — Predictive Maintenance
 
 An analytics platform for industrial IoT sensor telemetry with data governance, built on Azure Data Explorer (Kusto), Azure AI Foundry, and OpenMetadata.
 
 ## Architecture
 
-```
-AI4I Dataset (UCI)
-      ↓
-enrich_dataset.py         → adds plant_id, line_number, timestamp
-      ↓
-ingest.py                 → loads into Azure Data Explorer (Kusto DB)
-      ↓
-┌─────────────────────────────────────────────┐
-│           Azure Data Explorer               │
-│   fact_sensor_readings                      │
-│   dim_machine                               │
-│   dim_failure_type                          │
-└────────────┬────────────────────────────────┘
-             │                        │
-    query/query.py              OpenMetadata (local)
-    (interprets queries)        (catalog, lineage,
-             │                   data quality rules)
-    Azure AI Foundry
-    (GPT-4o)
-```
+![Project Architecture](./images/architecture.png)
 
 ## Dataset
 
