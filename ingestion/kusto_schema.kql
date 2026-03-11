@@ -1,0 +1,79 @@
+// Run these commands in Azure Data Explorer (dataexplorer.azure.com)
+// before running the ingestion script.
+// Database: iiot_db
+
+// ─────────────────────────────────────────
+// 1. FACT TABLE — sensor readings
+// ─────────────────────────────────────────
+.create table fact_sensor_readings (
+    timestamp: datetime,
+    machine_id: string,
+    plant_id: string,
+    line_number: int,
+    air_temperature: real,
+    process_temperature: real,
+    rotational_speed: int,
+    torque: real,
+    tool_wear: int,
+    failure_type: string
+)
+
+// ─────────────────────────────────────────
+// 2. DIM TABLE — machine
+// ─────────────────────────────────────────
+.create table dim_machine (
+    machine_id: string,
+    machine_type: string,
+    plant_id: string,
+    line_number: int,
+    commissioned_date: datetime
+)
+
+// ─────────────────────────────────────────
+// 3. DIM TABLE — failure type
+// ─────────────────────────────────────────
+.create table dim_failure_type (
+    failure_type: string,
+    severity: string,
+    description: string
+)
+
+// ─────────────────────────────────────────
+// 4. INGESTION MAPPINGS
+// ─────────────────────────────────────────
+.create table fact_sensor_readings ingestion csv mapping "fact_csv_mapping"
+'['
+'{"Column":"timestamp","Properties":{"Ordinal":0}},'
+'{"Column":"machine_id","Properties":{"Ordinal":1}},'
+'{"Column":"plant_id","Properties":{"Ordinal":2}},'
+'{"Column":"line_number","Properties":{"Ordinal":3}},'
+'{"Column":"air_temperature","Properties":{"Ordinal":4}},'
+'{"Column":"process_temperature","Properties":{"Ordinal":5}},'
+'{"Column":"rotational_speed","Properties":{"Ordinal":6}},'
+'{"Column":"torque","Properties":{"Ordinal":7}},'
+'{"Column":"tool_wear","Properties":{"Ordinal":8}},'
+'{"Column":"failure_type","Properties":{"Ordinal":9}}'
+']'
+
+.create table dim_machine ingestion csv mapping "dim_machine_csv_mapping"
+'['
+'{"Column":"machine_id","Properties":{"Ordinal":0}},'
+'{"Column":"machine_type","Properties":{"Ordinal":1}},'
+'{"Column":"plant_id","Properties":{"Ordinal":2}},'
+'{"Column":"line_number","Properties":{"Ordinal":3}},'
+'{"Column":"commissioned_date","Properties":{"Ordinal":4}}'
+']'
+
+.create table dim_failure_type ingestion csv mapping "dim_failure_csv_mapping"
+'['
+'{"Column":"failure_type","Properties":{"Ordinal":0}},'
+'{"Column":"severity","Properties":{"Ordinal":1}},'
+'{"Column":"description","Properties":{"Ordinal":2}}'
+']'
+
+// ─────────────────────────────────────────
+// 5. VERIFY after ingestion
+// ─────────────────────────────────────────
+// fact_sensor_readings | take 10
+// dim_machine | take 10
+// dim_failure_type | take 10

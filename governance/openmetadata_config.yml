@@ -1,0 +1,49 @@
+# OpenMetadata connector configuration for Azure Data Explorer (Kusto)
+# 
+# SETUP STEPS:
+# 1. Start OpenMetadata locally:
+#    docker compose up -d   (see docker-compose.yml)
+#
+# 2. Open http://localhost:8585 in browser
+#    Default login: admin / admin
+#
+# 3. Go to Settings → Connections → Add Connection
+#    Select: "Azure Data Explorer" (or use this config with the Python SDK)
+#
+# 4. Run ingestion:
+#    metadata ingest -c governance/openmetadata_config.yml
+
+source:
+  type: azuredataexplorer
+  serviceName: iiot_kusto_prod
+  serviceConnection:
+    config:
+      type: AzureDataExplorer
+      clusterUrl: "${KUSTO_CLUSTER}"         # e.g. https://yourcluster.eastus2.kusto.windows.net
+      database: "${KUSTO_DATABASE}"          # iiot_db
+      authority: "${AZURE_TENANT_ID}"
+      clientId: "${AZURE_CLIENT_ID}"
+      clientSecret: "${AZURE_CLIENT_SECRET}"
+
+  sourceConfig:
+    config:
+      type: DatabaseMetadata
+      markDeletedTables: true
+      includeTables: true
+      includeViews: false
+      tableFilterPattern:
+        includes:
+          - "fact_sensor_readings"
+          - "dim_machine"
+          - "dim_failure_type"
+
+sink:
+  type: metadata-rest
+  config: {}
+
+workflowConfig:
+  openMetadataServerConfig:
+    hostPort: "http://localhost:8585/api"
+    authProvider: openmetadata
+    securityConfig:
+      jwtToken: "${OPENMETADATA_JWT_TOKEN}"   # get from OpenMetadata UI → Settings → Bots
